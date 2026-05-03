@@ -1,443 +1,545 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover, shrink-to-fit=yes">
-  <title>NFS MW 2005 → Чёрный список | Автосалон | Полный тюнинг</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    body {
-      font-family: 'Segoe UI', 'Arial', sans-serif;
-      background: #0a0c0f;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 1rem;
-      position: relative;
-    }
-    .background {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 0;
-      background-image: url('https://avatars.mds.yandex.net/i?id=f507f5f882f63ec127c3d567af0d66c1_l-9222875-images-thumbs&n=13');
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      filter: brightness(0.4) contrast(1.15) blur(2px);
-      opacity: 0.9;
-    }
-    .smoke-container {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 2;
-    }
-    .smoke {
-      position: absolute;
-      background: rgba(170, 155, 115, 0.13);
-      border-radius: 55% 45% 50% 48%;
-      filter: blur(52px);
-      animation: floatSmoke 20s infinite ease-in-out;
-      opacity: 0.5;
-    }
-    .smoke:nth-child(1) { width: 80%; height: 65%; bottom: -20%; left: -12%; animation-delay: 0s; }
-    .smoke:nth-child(2) { width: 90%; height: 70%; bottom: -22%; right: -10%; animation-delay: -9s; }
-    .smoke:nth-child(3) { width: 70%; height: 55%; top: 50%; left: 12%; animation-delay: -5s; }
-    .smoke:nth-child(4) { width: 60%; height: 50%; top: 45%; right: 5%; animation-delay: -13s; }
-    @keyframes floatSmoke {
-      0% { transform: translate(0%, 0%) scale(1); opacity: 0.4; }
-      35% { transform: translate(4%, -9%) scale(1.12); opacity: 0.58; }
-      65% { transform: translate(-3%, -14%) scale(0.93); opacity: 0.45; }
-      100% { transform: translate(0%, 0%) scale(1); opacity: 0.4; }
-    }
-    .app {
-      position: relative;
-      z-index: 15;
-      width: 100%;
-      max-width: 800px;
-      background: rgba(6, 8, 12, 0.6);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-radius: 3rem;
-      padding: 1.5rem 1rem 2rem;
-      box-shadow: 0 40px 65px rgba(0,0,0,0.9), inset 0 1px 1px rgba(245,210,60,0.2);
-      border: 1px solid rgba(220, 175, 45, 0.45);
-    }
-    .nav-buttons {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      flex-wrap: wrap;
-      margin-bottom: 0.5rem;
-    }
-    .nav-btn {
-      background: rgba(12,12,10,0.85);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(230,190,55,0.5);
-      color: #ecd88c;
-      font-weight: bold;
-      font-size: 1.1rem;
-      letter-spacing: 1px;
-      padding: 0.8rem 1.2rem;
-      border-radius: 3rem;
-      cursor: pointer;
-      text-transform: uppercase;
-      transition: 0.2s;
-      box-shadow: 0 5px 12px rgba(0,0,0,0.6);
-      flex: 1;
-      min-width: 145px;
-      text-align: center;
-    }
-    .nav-btn.active {
-      background: rgba(200,150,20,0.4);
-      border-color: #f5cd5a;
-      color: #ffe3a3;
-      box-shadow: 0 0 22px rgba(255,200,40,0.65);
-      text-shadow: 0 0 4px #ffd966;
-    }
-    .cars-grid {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 1.2rem;
-      margin: 1rem 0 0.2rem;
-      max-height: 62vh;
-      overflow-y: auto;
-      padding: 0.5rem 0.2rem;
-    }
-    .cars-grid::-webkit-scrollbar {
-      width: 5px;
-    }
-    .cars-grid::-webkit-scrollbar-track {
-      background: rgba(30,30,30,0.5);
-      border-radius: 10px;
-    }
-    .cars-grid::-webkit-scrollbar-thumb {
-      background: #b38f40;
-      border-radius: 10px;
-    }
-    .car-card {
-      background: rgba(18,20,23,0.75);
-      backdrop-filter: blur(14px);
-      border-radius: 1.8rem;
-      padding: 0.75rem 0.4rem 0.7rem;
-      width: 128px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      border: 1px solid rgba(210,160,45,0.55);
-      box-shadow: 0 12px 24px rgba(0,0,0,0.7);
-      cursor: pointer;
-      transition: 0.15s;
-    }
-    .car-card:hover {
-      transform: scale(1.02);
-      border-color: #f5bc3c;
-      box-shadow: 0 0 12px rgba(245,180,50,0.5);
-    }
-    .car-card:active { transform: scale(0.97); }
-    .car-img {
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin-bottom: 0.5rem;
-    }
-    .car-img img {
-      max-width: 108px;
-      max-height: 84px;
-      width: auto;
-      height: auto;
-      object-fit: contain;
-      filter: drop-shadow(0 5px 7px black);
-      border-radius: 12px;
-    }
-    .car-name {
-      font-weight: bold;
-      color: #ffeaae;
-      font-size: 0.75rem;
-      text-align: center;
-      background: rgba(0,0,0,0.5);
-      padding: 0.2rem 0.35rem;
-      border-radius: 1rem;
-      width: 100%;
-    }
-    .modal-overlay {
-      position: fixed;
-      top:0; left:0; width:100%; height:100%;
-      background: rgba(0,0,0,0.85);
-      backdrop-filter: blur(14px);
-      z-index: 200;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 1rem;
-      visibility: hidden;
-      opacity: 0;
-      transition: 0.2s;
-    }
-    .modal-overlay.active { visibility: visible; opacity: 1; }
-    .modal-window {
-      background: rgba(8,10,14,0.96);
-      backdrop-filter: blur(30px);
-      border: 1px solid #d6a83c;
-      border-radius: 2rem;
-      max-width: 490px;
-      width: 100%;
-      padding: 1.4rem 1.2rem 1.6rem;
-      color: #f2e2b0;
-      box-shadow: 0 50px 70px black;
-      position: relative;
-    }
-    .modal-car-preview {
-      display: flex;
-      justify-content: center;
-      margin: -0.2rem 0 0.8rem 0;
-    }
-    .modal-car-preview img {
-      max-width: 95%;
-      max-height: 160px;
-      width: auto;
-      height: auto;
-      object-fit: contain;
-      filter: drop-shadow(0 8px 18px black);
-      border-radius: 24px;
-      background: rgba(0,0,0,0.3);
-      padding: 5px;
-    }
-     .close-btn {
-      position: absolute;
-      top: 8px; right: 16px;
-      background: none; border: none;
-      color: #e8bc64; font-size: 2rem;
-      cursor: pointer; font-weight: bold;
-    }
-    .close-btn:hover { color: #ffdd88; text-shadow: 0 0 5px #f5b335;}
-    .modal-title {
-      font-size: 1.45rem;
-      font-weight: bold;
-      color: #fad95f;
-      text-align: center;
-      margin: 0.2rem 0 0.2rem;
-    }
-    .specs-block {
-      background: rgba(0,0,0,0.6);
-      border-radius: 1.2rem;
-      padding: 0.7rem;
-      margin: 0.7rem 0;
-      font-size: 0.85rem;
-    }
-    .spec-row {
-      display: flex;
-      justify-content: space-between;
-      margin: 0.4rem 0;
-      border-bottom: 1px dashed rgba(230,180,70,0.3);
-      padding-bottom: 0.25rem;
-    }
-    .price-big {
-      font-weight: bold;
-      color: #ffcd6b;
-      text-align: center;
-      font-size: 1.2rem;
-      background: rgba(24,22,12,0.7);
-      border-radius: 2rem;
-      padding: 0.3rem;
-    }
-    .details-btn {
-      background: #252215;
-      border: 1px solid #cb9e47;
-      color: #ffdf94;
-      font-weight: bold;
-      padding: 0.65rem;
-      border-radius: 2rem;
-      cursor: pointer;
-      margin-top: 0.8rem;
-      width: 100%;
-      transition: 0.1s;
-    }
-    .details-btn:active { transform: scale(0.97); background: #3c321c;}
-    .details-panel {
-      background: rgba(0,0,0,0.75);
-      border-radius: 1rem;
-      padding: 0.7rem;
-      display: none;
-      margin-top: 0.7rem;
-      font-size: 0.85rem;
-      border-left: 3px solid #e3b155;
-    }
-    .details-panel.show { display: block; }
-    .extra-spec {
-      font-size: 0.8rem;
-      color: #ffe0a3;
-      background: rgba(0,0,0,0.4);
-      border-radius: 1rem;
-      padding: 0.2rem 0.5rem;
-      margin-top: 5px;
-      text-align: center;
-    }
-    footer {
-      font-size: 0.65rem;
-      text-align: center;
-      color: #b8a56e;
-      margin-top: 0.8rem;
-      opacity: 0.7;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover, shrink-to-fit=yes">
+    <title>NFS MW 2005 → Чёрный список | Автосалон | Полный тюнинг</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+            background: #0a0c0f;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+            position: relative;
+        }
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            background-image: url('https://avatars.mds.yandex.net/i?id=f507f5f882f63ec127c3d567af0d66c1_l-9222875-images-thumbs&n=13');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            filter: brightness(0.4) contrast(1.15) blur(2px);
+            opacity: 0.9;
+        }
+        .smoke-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+        .smoke {
+            position: absolute;
+            background: rgba(170, 155, 115, 0.13);
+            border-radius: 55% 45% 50% 48%;
+            filter: blur(52px);
+            animation: floatSmoke 20s infinite ease-in-out;
+            opacity: 0.5;
+        }
+        .smoke:nth-child(1) { width: 80%; height: 65%; bottom: -20%; left: -12%; animation-delay: 0s; }
+        .smoke:nth-child(2) { width: 90%; height: 70%; bottom: -22%; right: -10%; animation-delay: -9s; }
+        .smoke:nth-child(3) { width: 70%; height: 55%; top: 50%; left: 12%; animation-delay: -5s; }
+        .smoke:nth-child(4) { width: 60%; height: 50%; top: 45%; right: 5%; animation-delay: -13s; }
+        @keyframes floatSmoke {
+            0% { transform: translate(0%, 0%) scale(1); opacity: 0.4; }
+            35% { transform: translate(4%, -9%) scale(1.12); opacity: 0.58; }
+            65% { transform: translate(-3%, -14%) scale(0.93); opacity: 0.45; }
+            100% { transform: translate(0%, 0%) scale(1); opacity: 0.4; }
+        }
+        .app {
+            position: relative;
+            z-index: 15;
+            width: 100%;
+            max-width: 800px;
+            background: rgba(6, 8, 12, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 3rem;
+            padding: 1.5rem 1rem 2rem;
+            box-shadow: 0 40px 65px rgba(0,0,0,0.9), inset 0 1px 1px rgba(245,210,60,0.2);
+            border: 1px solid rgba(220, 175, 45, 0.45);
+        }
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.5rem;
+        }
+        .nav-btn {
+            background: rgba(12,12,10,0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(230,190,55,0.5);
+            color: #ecd88c;
+            font-weight: bold;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            padding: 0.8rem 1.2rem;
+            border-radius: 3rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: 0.2s;
+            box-shadow: 0 5px 12px rgba(0,0,0,0.6);
+            flex: 1;
+            min-width: 145px;
+            text-align: center;
+        }
+        .nav-btn.active {
+            background: rgba(200,150,20,0.4);
+            border-color: #f5cd5a;
+            color: #ffe3a3;
+            box-shadow: 0 0 22px rgba(255,200,40,0.65);
+            text-shadow: 0 0 4px #ffd966;
+        }
+
+        /* ГЛОБАЛЬНОЕ МЕНЮ */
+        .global-menu-btn {
+            position: fixed;
+            top: 20px;
+            right: 22px;
+            z-index: 300;
+            width: 48px;
+            height: 48px;
+            background: rgba(10,10,8,0.9);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(220,180,50,0.65);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: #f7d87f;
+            cursor: pointer;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.8);
+            transition: 0.2s;
+            user-select: none;
+        }
+        .global-menu-btn:hover {
+            background: rgba(30,28,18,0.95);
+            color: #ffe9a8;
+        }
+        .global-dropdown {
+            position: fixed;
+            top: 80px;
+            right: 22px;
+            z-index: 310;
+            min-width: 210px;
+            background: rgba(15,15,12,0.96);
+            backdrop-filter: blur(22px);
+            -webkit-backdrop-filter: blur(22px);
+            border: 1px solid #c8a246;
+            border-radius: 1.8rem;
+            padding: 0.8rem 0.3rem;
+            box-shadow: 0 20px 40px black;
+            display: none;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+        .global-dropdown.show {
+            display: flex;
+        }
+        .menu-item {
+            background: transparent;
+            border: none;
+            color: #eddab2;
+            padding: 0.7rem 1.2rem;
+            text-align: left;
+            font-weight: bold;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border-radius: 2rem;
+            transition: 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .menu-item:hover {
+            background: rgba(235,190,70,0.15);
+            color: #ffdc8a;
+        }
+        .menu-close-btn {
+            background: transparent;
+            border: 1px solid rgba(200,150,40,0.5);
+            color: #e0c070;
+            padding: 0.4rem;
+            margin: 0.2rem 0.8rem 0;
+            border-radius: 2rem;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+
+        .cars-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1.2rem;
+            margin: 1rem 0 0.2rem;
+            max-height: 62vh;
+            overflow-y: auto;
+            padding: 0.5rem 0.2rem;
+        }
+        .cars-grid::-webkit-scrollbar {
+            width: 5px;
+        }
+        .cars-grid::-webkit-scrollbar-track {
+            background: rgba(30,30,30,0.5);
+            border-radius: 10px;
+        }
+        .cars-grid::-webkit-scrollbar-thumb {
+            background: #b38f40;
+            border-radius: 10px;
+        }
+        .car-card {
+            background: rgba(18,20,23,0.75);
+            backdrop-filter: blur(14px);
+            border-radius: 1.8rem;
+            padding: 0.75rem 0.4rem 0.7rem;
+            width: 128px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 1px solid rgba(210,160,45,0.55);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.7);
+            cursor: pointer;
+            transition: 0.15s;
+        }
+        .car-card:hover {
+            transform: scale(1.02);
+            border-color: #f5bc3c;
+            box-shadow: 0 0 12px rgba(245,180,50,0.5);
+        }
+        .car-card:active { transform: scale(0.97); }
+        .car-img {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        .car-img img {
+            max-width: 108px;
+            max-height: 84px;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 5px 7px black);
+            border-radius: 12px;
+        }
+        .car-name {
+            font-weight: bold;
+            color: #ffeaae;
+            font-size: 0.75rem;
+            text-align: center;
+            background: rgba(0,0,0,0.5);
+            padding: 0.2rem 0.35rem;
+            border-radius: 1rem;
+            width: 100%;
+        }
+        .modal-overlay {
+            position: fixed;
+            top:0; left:0; width:100%; height:100%;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(14px);
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            visibility: hidden;
+            opacity: 0;
+            transition: 0.2s;
+        }
+        .modal-overlay.active { visibility: visible; opacity: 1; }
+        .modal-window {
+            background: rgba(8,10,14,0.96);
+            backdrop-filter: blur(30px);
+            border: 1px solid #d6a83c;
+            border-radius: 2rem;
+            max-width: 490px;
+            width: 100%;
+            padding: 1.4rem 1.2rem 1.6rem;
+            color: #f2e2b0;
+            box-shadow: 0 50px 70px black;
+            position: relative;
+        }
+        .modal-car-preview {
+            display: flex;
+            justify-content: center;
+            margin: -0.2rem 0 0.8rem 0;
+        }
+        .modal-car-preview img {
+            max-width: 95%;
+            max-height: 160px;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 8px 18px black);
+            border-radius: 24px;
+            background: rgba(0,0,0,0.3);
+            padding: 5px;
+        }
+        .close-btn {
+            position: absolute;
+            top: 8px; right: 16px;
+            background: none; border: none;
+            color: #e8bc64; font-size: 2rem;
+            cursor: pointer; font-weight: bold;
+        }
+        .close-btn:hover { color: #ffdd88; text-shadow: 0 0 5px #f5b335;}
+        .modal-title {
+            font-size: 1.45rem;
+            font-weight: bold;
+            color: #fad95f;
+            text-align: center;
+            margin: 0.2rem 0 0.2rem;
+        }
+        .specs-block {
+            background: rgba(0,0,0,0.6);
+            border-radius: 1.2rem;
+            padding: 0.7rem;
+            margin: 0.7rem 0;
+            font-size: 0.85rem;
+        }
+        .spec-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 0.4rem 0;
+            border-bottom: 1px dashed rgba(230,180,70,0.3);
+            padding-bottom: 0.25rem;
+        }
+        .price-big {
+            font-weight: bold;
+            color: #ffcd6b;
+            text-align: center;
+            font-size: 1.2rem;
+            background: rgba(24,22,12,0.7);
+            border-radius: 2rem;
+            padding: 0.3rem;
+        }
+        .details-btn {
+            background: #252215;
+            border: 1px solid #cb9e47;
+            color: #ffdf94;
+            font-weight: bold;
+            padding: 0.65rem;
+            border-radius: 2rem;
+            cursor: pointer;
+            margin-top: 0.8rem;
+            width: 100%;
+            transition: 0.1s;
+        }
+        .details-btn:active { transform: scale(0.97); background: #3c321c;}
+        .details-panel {
+            background: rgba(0,0,0,0.75);
+            border-radius: 1rem;
+            padding: 0.7rem;
+            display: none;
+            margin-top: 0.7rem;
+            font-size: 0.85rem;
+            border-left: 3px solid #e3b155;
+        }
+        .details-panel.show { display: block; }
+    </style>
 </head>
 <body>
 <div class="background"></div>
 <div class="smoke-container"><div class="smoke"></div><div class="smoke"></div><div class="smoke"></div><div class="smoke"></div></div>
+
+<!-- ГЛОБАЛЬНОЕ МЕНЮ -->
+<div class="global-menu-btn" id="globalMenuBtn">⋮</div>
+<div class="global-dropdown" id="globalDropdown">
+    <button class="menu-item" onclick="window.open('https://Zvonoki.github.io/wikipedia-nfs-mw-2005/')">📖 NFS Wiki</button>
+    <button class="menu-item" onclick="window.open('https://youtube.com/@NeedforSpeed','_blank')">▶️ YouTube NFS</button>
+    <button class="menu-item" onclick="alert('Сайт создан фанатом NFS MW 2005. Версия 2.0')">ℹ️ О проекте</button>
+    <button class="menu-close-btn" id="closeMenuBtn">✕ Закрыть меню</button>
+</div>
+
 <div class="app">
-  <div class="nav-buttons">
-    <button id="btnBlacklist" class="nav-btn active">☠︎︎ ЧЁРНЫЙ СПИСОК 🗒</button>
-    <button id="btnShowroom" class="nav-btn">𖠿 АВТОСАЛОН</button>
-  </div>
-  <div id="carsContainer" class="cars-grid"></div>
-  <div style="font-size: 11px; text-align: center; color: #ab9a60; margin-top: 5px;">✧ нажми на авто — увидишь характеристики ✧</div>
+    <div class="nav-buttons">
+        <button id="btnBlacklist" class="nav-btn active">☠︎︎ ЧЁРНЫЙ СПИСОК 🗒</button>
+        <button id="btnShowroom" class="nav-btn">𖠿 АВТОСАЛОН</button>
+    </div>
+    <div id="carsContainer" class="cars-grid"></div>
+    <div style="font-size: 11px; text-align: center; color: #ab9a60; margin-top: 5px;">✧ нажми на авто — увидишь характеристики ✧</div>
 </div>
+
 <div id="modalOverlay" class="modal-overlay">
-  <div class="modal-window">
-    <button id="closeModalBtn" class="close-btn">&times;</button>
-    <div id="modalCarImage" class="modal-car-preview"></div>
-    <div id="modalTitle" class="modal-title"></div>
-    <div id="modalSpecs" class="specs-block"></div>
-    <div id="modalPrice"></div>
-    <button id="detailsToggleBtn" class="details-btn">𓎚 ДЕТАЛИ ТЮНИНГА / ОБВЕСА 𓎚</button>
-    <div id="detailsList" class="details-panel"></div>
-  </div>
+    <div class="modal-window">
+        <button id="closeModalBtn" class="close-btn">&times;</button>
+        <div id="modalCarImage" class="modal-car-preview"></div>
+        <div id="modalTitle" class="modal-title"></div>
+        <div id="modalSpecs" class="specs-block"></div>
+        <div id="modalPrice"></div>
+        <button id="detailsToggleBtn" class="details-btn">𓎚 ДЕТАЛИ ТЮНИНГА / ОБВЕСА 𓎚</button>
+        <div id="detailsList" class="details-panel"></div>
+    </div>
 </div>
+
 <script>
-  (function() {
-    const blacklistCars = [
-      { id:1, name:"Razor → BMW M3 GTR", img:"https://avatars.mds.yandex.net/i?id=7fe4ed16aa6e1ccbefd3f6781a7bbc04bdda846e-5229540-images-thumbs&n=13", speed:390, handling:9.8, acceleration:9.9, nos:"Мощный", engine:"V8 4.0 (P60B40)", drive:"Задний привод", price:"Бесценна (трофей)", details:["1. Карбоновый капот Motorsport","2. Гоночный обвес GTR (расширители)","3. Выхлоп Akrapovic Evolution","4. Ковши Recaro Pole Position","5. Каркас безопасности 6-точечный"] },
-      { id:2, name:"Bull → Mercedes SLR", img:"https://avatars.mds.yandex.net/i?id=6a78ac3681f2276ab908aea71515f23a13ab09c5-5231719-images-thumbs&n=13", speed:378, handling:9.2, acceleration:9.7, nos:"Стандарт", engine:"V8 Kompressor 5.4", drive:"Задний привод", price:"$450 000", details:["1. Карбоновое антикрыло SLR","2. Расширители арок 722","3. Компрессорный V8 (650 л.с.)","4. Керамические тормоза","5. Облегченный кузов из карбона"] },
-      { id:3, name:"Ronnie → Aston DB9", img:"https://avatars.mds.yandex.net/i?id=12067020462c5c40c49136adc20763bb_l-5219691-images-thumbs&n=13", speed:365, handling:9.4, acceleration:9.5, nos:"Улучш.", engine:"V12 6.0", drive:"Задний привод", price:"$185 000", details:["1. Карбоновый диффузор","2. Спорт-выхлоп Capristo","3. V12 форсированный (510 л.с.)","4. Пневмоподвеска","5. Карбоновая крыша"] },
-      { id:4, name:"JV → Dodge Viper SRT-10", img:"https://avatars.mds.yandex.net/i?id=6370ad581a69030946d599d7af2ec36d_l-7546005-images-thumbs&n=13", speed:370, handling:8.9, acceleration:9.8, nos:"Мощный", engine:"V10 8.4L", drive:"Задний привод", price:"$110 000", details:["1. Карбоновый капот SRT","2. V10 8.4L (620 л.с.)","3. Гоночные шины Toyo R888","4. Обвес ACR Extreme","5. Титановый выхлоп"] },
-      { id:5, name:"Webster → Corvette C6", img:"https://avatars.mds.yandex.net/i?id=8aebbef2e96ca3dd6839b9150e58eb1a90efdde2-9097932-images-thumbs&n=13", speed:360, handling:9.1, acceleration:9.4, nos:"Стандарт", engine:"LS7 7.0L", drive:"Задний привод", price:"$80 000", details:["1. Z06 обвес","2. Карбоновые крылья", "3. LS7 7.0L (505 л.с.)","4. Койловеры KW","5. Спорт-катализатор"] },
-      { id:6, name:"Ming → Lamborghini Gallardo", img:"https://avatars.mds.yandex.net/i?id=acc59b82e3a72fb0e38d4b891dc6295be6a59057-12640276-images-thumbs&n=13", speed:372, handling:9.3, acceleration:9.6, nos:"Мощный", engine:"V10 5.0", drive:"Полный привод", price:"$190 000", details:["1. Карбоновый сплиттер","2. V10 5.0 (530 л.с.)","3. Полный привод","4. Гоночный выхлоп Capristo","5. Карбоновые двери"] },
-      { id:7, name:"Kamikaze → Mercedes CLK500", img:"https://avatars.mds.yandex.net/i?id=0d8e8e56520c2a05620dda80aa1590bf33b302a6-5427097-images-thumbs&n=13", speed:358, handling:9.0, acceleration:9.2, nos:"Стандарт", engine:"V8 5.0", drive:"Задний привод", price:"$55 000", details:["1. AMG обвес","2. V8 компрессор (430 л.с.)","3. Спорт-подвеска H&R","4. Карбоновые зеркала","5. Выхлопная система Eisenmann"] },
-      { id:8, name:"Jewels → Ford Mustang GT", img:"https://avatars.mds.yandex.net/i?id=aa51a9c5ba81fc9fe800bcb2eca266c4c2476fac-10109607-images-thumbs&n=13", speed:340, handling:8.8, acceleration:9.3, nos:"Мощный", engine:"V8 4.6", drive:"Задний привод", price:"$45 000", details:["1. Shelby обвес","2. V8 4.6 (480 л.с. нагнетатель)","3. Нагнетатель Whipple","4. Занижение Eibach","5. Карбоновый капот"] },
-      { id:9, name:"Earl → Mitsubishi Evo VIII", img:"https://avatars.mds.yandex.net/i?id=fb414f91823f76e1cd9f15cebfab76bdf127f9af-12811218-images-thumbs&n=13", speed:345, handling:9.6, acceleration:9.1, nos:"Улучш.", engine:"4G63 2.0 Turbo", drive:"Полный привод", price:"$38 000", details:["1. Раллийный обвес","2. 4G63 турбо (400 л.с.)","3. Полный привод AYC","4. Карбоновое антикрыло","5. Кованые диски Enkei"] },
-      { id:10, name:"Baron → Porsche Cayman S", img:"https://avatars.mds.yandex.net/i?id=e634154168d77656a372fda073a238b3dfc1c31e-8487535-images-thumbs&n=13", speed:342, handling:9.4, acceleration:9.0, nos:"Мощный", engine:"3.4 Boxer", drive:"Задний привод", price:"$78 000", details:["1. Карбоновый пакет","2. 3.4л (360 л.с.)","3. Выхлопная система Akra","4. Керамические тормоза","5. Спортивная подвеска"] },
-      { id:11, name:"Big Lou → Mitsubishi Eclipse", img:"https://avatars.mds.yandex.net/i?id=88219d877de9543c057f6492ff4105b61519233f-8550886-images-thumbs&n=13", speed:325, handling:8.7, acceleration:9.0, nos:"Стандарт", engine:"4G63 Turbo 2.0", drive:"Передний привод", price:"$28 000", details:["1. Обвес Bomex","2. 4G63 (320 л.с.)","3. Передний привод LSD","4. Карбоновые крылья","5. Спорт-катализатор"] },
-      { id:12, name:"Izzy → Mazda RX-8", img:"https://avatars.mds.yandex.net/i?id=e7d4021bc1601fdc8df9f8f23554288ffff28fe6-5505749-images-thumbs&n=13", speed:330, handling:9.5, acceleration:8.9, nos:"Улучш.", engine:"RENESIS 1.3 Turbo", drive:"Задний привод", price:"$32 000", details:["1. Ротор 13B (350 л.с.)","2. Турбо GReddy","3. Обвес RE Amemiya","4. Карбоновый капот","5. Спорт-выхлоп HKS"] },
-      { id:13, name:"Vic → Toyota Supra", img:"https://avatars.mds.yandex.net/i?id=1f76be940eb821806f69ee2a51e5b2e406721222-9182174-images-thumbs&n=13", speed:338, handling:9.2, acceleration:9.4, nos:"Мощный", engine:"2JZ-GTE 3.0", drive:"Задний привод", price:"$85 000", details:["1. Широкий обвес Veilside","2. 2JZ 800+ л.с.","3. Турбо HKS T62R","4. Карбоновые двери","5. Гоночная подвеска KW"] },
-      { id:14, name:"Taz → Lexus IS300", img:"https://avatars.mds.yandex.net/i?id=2209629ab9438efdeb8d318d6799a6edaccb0c5d-4145587-images-thumbs&n=13", speed:315, handling:8.9, acceleration:8.7, nos:"Стандарт", engine:"2JZ-GE Turbo", drive:"Задний привод", price:"$27 000", details:["1. Обвес Altezza","2. 2JZ-GE (400 л.с.)","3. Задний привод с диффом","4. Карбоновый капот","5. Койловеры BC"] },
-      { id:15, name:"Sonny → VW Golf GTI", img:"https://avatars.mds.yandex.net/i?id=90aae46b0e8872f987d255eaf6695aa9d1b257c5-12508610-images-thumbs&n=13", speed:280, handling:8.5, acceleration:7.8, nos:"Стандарт", engine:"1.8T 20v", drive:"Передний привод", price:"$18 500", details:["1. Турбированный 1.8T (280 л.с.)","2. Передний привод с вязкостным диффом","3. Обвес Street Spec","4. Винил '極速'","5. Диски BBS CH 18"] }
-    ];
-    const showroomCars = [
-      { id:101, name:"Lexus IS 300", img:"https://avatars.mds.yandex.net/i?id=896e8c559e40f80dc2aeece042d9c5f9_l-7058976-images-thumbs&n=13", speed:218, handling:6.8, acceleration:5.9, price:"22 000 $", engine:"2JZ-GE 3.0", drive:"Задний привод", details:["1. Заводской аэродинамический обвес","2. Литые диски 17''","3. Спортивная подвеска Eibach","4. Выхлопная система HKS","5. Карбоновый сплиттер"] },
-      { id:102, name:"Fiat Punto", img:"https://avatars.mds.yandex.net/i?id=bf942c695638322ab1c1486607cca3b68533fac2-5302491-images-thumbs&n=13", speed:185, handling:7.2, acceleration:4.8, price:"16 000 $", engine:"1.4 16V NA", drive:"Передний привод", details:["1. Аэродинамический обвес Abarth","2. Выпускная система Ragazzon","3. Спортивный фильтр BMC","4. Колесные диски 16''","5. Занижение пружинами Eibach"] },
-      { id:103, name:"Chevrolet Cobalt™ SS", img:"https://avatars.mds.yandex.net/i?id=ad4040147dee6210301ea01072664eebef6009c0-4355070-images-thumbs&n=13", speed:228, handling:7.0, acceleration:6.5, price:"24 000 $", engine:"2.0 Supercharged LSJ", drive:"Передний привод", details:["1. Обвес SS (передний бампер, пороги)","2. Задний диффузор","3. Кованые диски 17''","4. Занижение KW","5. Выпуск 2.5''"] },
-      { id:104, name:"Volkswagen Golf GTI", img:"https://avatars.mds.yandex.net/i?id=a67504ff084e93afc12a082c740d45fc9ba9b0765ad30a5a-4290971-images-thumbs&n=13", speed:220, handling:7.5, acceleration:6.2, price:"26 000 $", engine:"2.0 TFSI", drive:"Передний привод", details:["1. Обвес GTI Clubsport","2. Спортивная подвеска","3. Интеркулер усиленный","4. Выхлоп Milltek","5. Диски Detroit 18''"] },
-      { id:105, name:"Audi TT 3.2 quattro", img:"https://avatars.mds.yandex.net/i?id=e299e271a98cb2706c88007503f6d8a4da8a9771-3410853-images-thumbs&n=13", speed:250, handling:8.1, acceleration:6.9, price:"38 000 $", engine:"VR6 3.2", drive:"quattro", details:["1. Spoiler задний","2. Боковые юбки","3. Ксенон + LED","4. 18'' литые диски","5. Аудиосистема Bose"] },
-      { id:106, name:"Audi A3 3.2 quattro", img:"https://avatars.mds.yandex.net/i?id=f9a5ed908c5ceddd12f703e8a75be1c634d5aca2-4600215-images-thumbs&n=13", speed:238, handling:7.8, acceleration:6.4, price:"32 000 $", engine:"VR6 3.2", drive:"quattro", details:["1. Спорт-пакет S-Line","2. Карбоновые накладки зеркал","3. Выхлоп Remus","4. Колеса 18''","5. Занижение Eibach"] },
-      { id:107, name:"Mitsubishi Eclipse", img:"https://avatars.mds.yandex.net/i?id=f2d8ebf088470694a97bcc6780c1e8a786aec58a-4432861-images-thumbs&n=13", speed:242, handling:7.6, acceleration:6.7, price:"30 000 $", engine:"V6 3.8 MIVEC", drive:"Передний привод", details:["1. Обвес GT","2. Высокопроизводительный тормозной комплект","3. Спортивный катализатор","4. Литые 18''","5. Занижение 35mm"] },
-      { id:108, name:"Audi A4 3.2 FSI quattro", img:"https://avatars.mds.yandex.net/i?id=fcdb6504061519fa8ccd2b66ab6b6f1c-4019165-images-thumbs&n=13", speed:244, handling:7.5, acceleration:6.6, price:"34 000 $", engine:"3.2 FSI V6", drive:"quattro", details:["1. S-Line обвес","2. Ксенон","3. Диски 18'' RS4","4. Спортивный руль","5. Короткоходная КПП"] },
-      { id:109, name:"Toyota Supra", img:"https://avatars.mds.yandex.net/i?id=bbbd2af1cc1b3482fc3b73887d4dee12fe17578b-5237892-images-thumbs&n=13", speed:255, handling:7.9, acceleration:7.2, price:"38 000 $", engine:"2JZ-GTE", drive:"Задний привод", details:["1. Обвес TRD","2. Выпуск HKS Hi-Power","3. Колеса 18''","4. Блокировка дифференциала","5. Интеркулер GReddy"] },
-      { id:110, name:"Renault Clio V6", img:"https://avatars.mds.yandex.net/i?id=01374a90945abc56c7d72b0c24adf6a7afa39b16-4411541-images-thumbs&n=13", speed:248, handling:8.0, acceleration:6.9, price:"35 000 $", engine:"V6 3.0", drive:"Задний привод", details:["1. Усиленные тормоза","2. Кованые диски OZ","3. Спортивная подвеска","4. Кожух двигателя","5. Выхлопная система KTR"] },
-      { id:111, name:"Mazda RX-8", img:"https://avatars.mds.yandex.net/i?id=e5112c17a22708a57f0a9df36eff7cac5988007d-5231985-images-thumbs&n=13", speed:236, handling:8.2, acceleration:6.0, price:"28 000 $", engine:"13B-MSP Renesis", drive:"Задний привод", details:["1. Аэродинамический обвес Mazdaspeed","2. Короткоходная подвеска","3. Спортивный выхлоп","4. Усиленная сцепление","5. Диски 18''"] },
-      { id:112, name:"Cadillac CTS", img:"https://avatars.mds.yandex.net/i?id=38c677def6ae0928b2451ab381950c623c055482-4143030-images-thumbs&n=13", speed:248, handling:7.0, acceleration:6.8, price:"33 000 $", engine:"3.6 V6", drive:"Задний привод", details:["1. Спорт-пакет CTS-V обвес","2. Койловеры","3. Тормоза Brembo","4. Диски 18''","5. Карбоновый спойлер"] },
-      { id:113, name:"Ford Mustang GT", img:"https://avatars.mds.yandex.net/i?id=b96c4c4d102fb10ee07b0a0e98798a0eb98313c9-4556414-images-thumbs&n=13", speed:260, handling:7.2, acceleration:7.5, price:"36 000 $", engine:"4.6 V8", drive:"Задний привод", details:["1. Обвес GT California Special","2. Спортивные пружины","3. Выхлоп Borla","4. Кованые 18''","5. Карбоновый капот"] },
-      { id:114, name:"Mitsubishi Lancer Evolution VIII", img:"https://avatars.mds.yandex.net/i?id=eaefd8eb26a1fa2a7c23e9ce6eab41e51ac00db6-4034522-images-thumbs&n=13", speed:265, handling:9.0, acceleration:8.2, price:"40 000 $", engine:"4G63 Turbo", drive:"Полный привод", details:["1. Обвес Evolution MR","2. Раллийные пружины","3. Турбо-кит HKS","4. Карбоновое антикрыло","5. Блокировка AYC"] },
-      { id:115, name:"Mercedes-Benz SL 500", img:"https://avatars.mds.yandex.net/i?id=53593489bc038c1c3f59204e9685e40499843eb7-5865432-images-thumbs&n=13", speed:270, handling:7.8, acceleration:7.4, price:"95 000 $", engine:"V8 5.0", drive:"Задний привод", details:["1. AMG обвес","2. Пневмоподвеска lowered","3. Диски 18'' AMG","4. Выпускная система","5. Карбоновые зеркала"] },
-      { id:116, name:"Pontiac GTO", img:"https://avatars.mds.yandex.net/i?id=b4f9985a21ece74a8c6c210b921ffe2da09d9774-5713119-images-thumbs&n=13", speed:268, handling:7.1, acceleration:7.8, price:"40 000 $", engine:"V8 LS2", drive:"Задний привод", details:["1. Обвес HSV","2. Койловеры Pedders","3. Выпуск Magnaflow","4. Диски 18''","5. Задний спойлер"] },
-      { id:117, name:"Vauxhall Monaro VXR", img:"https://avatars.mds.yandex.net/i?id=ce7190c1454a0493fbc4d16acf79cf298c857c8a-3963629-images-thumbs&n=13", speed:270, handling:7.0, acceleration:7.9, price:"41 000 $", engine:"LS2 6.0", drive:"Задний привод", details:["1. VXR обвес","2. Спортвыхлоп","3. Занижение 30mm","4. Тормоза AP Racing","5. Диски VXR"] },
-      { id:118, name:"Porsche Cayman S", img:"https://avatars.mds.yandex.net/i?id=35f93ecbb8a8d0e3ae5dd46524f1f92b21b72f8d-7149282-images-thumbs&n=13", speed:275, handling:8.7, acceleration:7.6, price:"58 000 $", engine:"3.4 Boxer", drive:"Задний привод", details:["1. Аэрокит TechArt","2. Спорт-выхлоп","3. Керамические тормоза","4. Карбоновые накладки","5. Кованые диски"] },
-      { id:119, name:"Subaru Impreza WRX", img:"https://avatars.mds.yandex.net/i?id=c250582955fb944543a1d6e4a3a4a70a41a20372-4437502-images-thumbs&n=13", speed:252, handling:8.4, acceleration:6.8, price:"34 000 $", engine:"EJ20 Turbo", drive:"Полный привод", details:["1. Обвес STI","2. Прошивка ECU","3. Интеркулер","4. Турбо-выхлоп HKS","5. Регулируемая подвеска"] },
-      { id:120, name:"Mazda RX-7", img:"https://avatars.mds.yandex.net/i?id=779723563bf8f9145444f34075d2d2f47d718cdd-5664541-images-thumbs&n=13", speed:258, handling:8.5, acceleration:7.3, price:"42 000 $", engine:"13B-REW", drive:"Задний привод", details:["1. Обвес RE Amemiya","2. Турбо-кит","3. Кованые диски","4. Карбоновый капот","5. Байпас"] },
-      { id:121, name:"Mercedes CLK 500", img:"https://avatars.mds.yandex.net/i?id=2e4cd686762d07a0cc5e28761d173144456028f2-17810957-images-thumbs&n=13", speed:249, handling:7.4, acceleration:8.0, price:"52 000 $", engine:"5.0 V8", drive:"Задний привод", details:["1. AMG обвес","2. 18'' AMG","3. Спорт-подвеска","4. Кожа Nappa","5. Карбоновый спойлер"] },
-      { id:122, name:"Lotus Elise", img:"https://avatars.mds.yandex.net/i?id=30af0e06e51af6ced58941f913482d810ceede23-5251159-images-thumbs&n=13", speed:245, handling:9.2, acceleration:6.8, price:"45 000 $", engine:"1.8 Rover K", drive:"Задний привод", details:["1. Аэродинамический обвес","2. Кованые диски","3. Спорт-выхлоп Larini","4. Усиленные тормоза","5. Карбоновая отделка"] },
-      { id:123, name:"Aston Martin DB9", img:"https://avatars.mds.yandex.net/i?id=fff14f8c855f8d8f740807e2b908f5d1b8fc01f7-5666966-images-thumbs&n=13", speed:305, handling:8.6, acceleration:8.5, price:"155 000 $", engine:"V12 6.0", drive:"Задний привод", details:["1. Карбоновый обвес","2. Выхлоп Capristo","3. Керамические тормоза","4. 19'' кованые","5. Спортивная подвеска"] },
-      { id:124, name:"Porsche 911 Carrera S", img:"https://avatars.mds.yandex.net/i?id=2541d14613e229dd7f436b912449b9ed47028f80-3923189-images-thumbs&n=13", speed:298, handling:8.9, acceleration:8.6, price:"120 000 $", engine:"3.8 Boxer", drive:"Задний привод", details:["1. Аэрокит Aerokit","2. Керамика PCCB","3. Спорт-выхлоп","4. Занижение 20mm","5. Карбоновые зеркала"] },
-      { id:125, name:"Dodge Viper SRT-10", img:"https://avatars.mds.yandex.net/i?id=b3941dd53e1380b1e9a6ef4af1d6ce97fc5a72f2-5026382-images-thumbs&n=13", speed:320, handling:8.0, acceleration:9.0, price:"110 000 $", engine:"V10 8.3", drive:"Задний привод", details:["1. Обвес SRT-10 Competition","2. Койловеры Mopar","3. Титановый выхлоп","4. Карбоновые крылья","5. Кованые диски"] },
-      { id:126, name:"Lamborghini Gallardo", img:"https://avatars.mds.yandex.net/i?id=bea74c3bf37457a85069f5161cf80f85c0ddc47b-17396670-images-thumbs&n=13", speed:310, handling:8.5, acceleration:8.8, price:"120 000 $", engine:"V10 5.0", drive:"Полный привод", details:["1. Карбоновый обвес Novitec","2. Гоночный выхлоп","3. Керамические тормоза","4. Занижение","5. Колеса 19''"] },
-      { id:127, name:"Porsche 911 Turbo S", img:"https://avatars.mds.yandex.net/i?id=4b63e5433617f717af9ead505067b8c69d3567f9-5875598-images-thumbs&n=13", speed:325, handling:8.8, acceleration:9.1, price:"150 000 $", engine:"3.6 Twin-Turbo", drive:"Полный привод", details:["1. Карбон-пакет","2. Аэродинамический обвес","3. Выхлоп Akrapovic","4. PCCB керамика","5. Программирование ECU"] },
-      { id:128, name:"Chevrolet Corvette C6™", img:"https://avatars.mds.yandex.net/i?id=9c0378ebdfeafdbf2773a6c8cd15710dbb3eca83-5042173-images-thumbs&n=13", speed:290, handling:7.8, acceleration:8.2, price:"65 000 $", engine:"LS2 6.0", drive:"Задний привод", details:["1. Обвес Z06","2. Выхлоп Corsa","3. Кованые 18''","4. Спортивные ремни","5. Подвеска Bilstein"] },
-      { id:129, name:"Lamborghini Murciélago", img:"https://avatars.mds.yandex.net/i?id=6d71b09beb88396efa0c88bcb58b21d37990dc6a-4769521-images-thumbs&n=13", speed:340, handling:8.5, acceleration:9.3, price:"320 000 $", engine:"V12 6.2", drive:"Полный привод", details:["1. Карбоновый обвес","2. Гоночная подвеска","3. Керамические тормоза","4. Титановый выхлоп","5. Колеса 20''"] },
-      { id:130, name:"Ford GT", img:"https://avatars.mds.yandex.net/i?id=cd013914c2e5c8d0bb05bdbb17077e3beb218b76-5107704-images-thumbs&n=13", speed:340, handling:8.2, acceleration:9.4, price:"200 000 $", engine:"V8 5.4 SC", drive:"Задний привод", details:["1. Карбоновый кузов","2. Кованые диски","3. Усиленные тормоза","4. Выхлоп Borla","5. Спортивная подвеска"] },
-      { id:131, name:"Mercedes SLR McLaren", img:"https://avatars.mds.yandex.net/i?id=16c40935120b81d45d21672cfec0629328786085-10962086-images-thumbs&n=13", speed:330, handling:8.3, acceleration:9.2, price:"350 000 $", engine:"V8 Kompressor", drive:"Задний привод", details:["1. Карбоновый обвес 722","2. Выхлопная система","3. Керамика","4. 19'' кованые","5. Аэродинамический пакет"] },
-      { id:132, name:"Porsche Carrera GT", img:"https://avatars.mds.yandex.net/i?id=8b87b893724a224ebe59daf3abc996ec8dd9d284-5247923-images-thumbs&n=13", speed:345, handling:8.9, acceleration:9.5, price:"450 000 $", engine:"V10 5.7", drive:"Задний привод", details:["1. Карбоновый монокок","2. Керамические тормоза","3. Спорт-выхлоп","4. Кованые диски","5. Гоночная подвеска"] }
-    ];
-    let currentMode = 'blacklist';
-    let currentCars = [...blacklistCars];
-    let currentOpenedCar = null;
-    const btnBlacklist = document.getElementById('btnBlacklist');
-    const btnShowroom = document.getElementById('btnShowroom');
-    const carsContainer = document.getElementById('carsContainer');
-    const modalOverlay = document.getElementById('modalOverlay');
-    const closeModalBtn = document.getElementById('closeModalBtn');
-    const modalTitle = document.getElementById('modalTitle');
-    const modalSpecs = document.getElementById('modalSpecs');
-    const modalPrice = document.getElementById('modalPrice');
-    const detailsToggleBtn = document.getElementById('detailsToggleBtn');
-    const detailsList = document.getElementById('detailsList');
-    const modalCarImage = document.getElementById('modalCarImage');
-    function renderCars() {
-      carsContainer.innerHTML = '';
-      currentCars.forEach(car => {
-        const card = document.createElement('div');
-        card.className = 'car-card';
-        card.innerHTML = `<div class="car-img"><img src="${car.img}" alt="${car.name}" loading="lazy" onerror="this.src='https://i.imgur.com/0iCZoCe.png'"></div><div class="car-name">${car.name}</div>`;
-        card.addEventListener('click', () => openModal(car));
-        carsContainer.appendChild(card);
-      });
-    }
-    function openModal(car) {
-      currentOpenedCar = car;
-      modalTitle.textContent = car.name;
-      // крупное фото
-      modalCarImage.innerHTML = `<img src="${car.img}" alt="${car.name}" onerror="this.src='https://i.imgur.com/0iCZoCe.png'">`;      
-      let specsHTML = `<div class="spec-row"><span>⏲ Макс. скорость</span> <strong>${car.speed} км/ч</strong></div>
-                       <div class="spec-row"><span>⚠︎ Управление</span> <strong>${car.handling}/10</strong></div>
-                       <div class="spec-row"><span>⏱ Разгон (0-100)</span> <strong>${car.acceleration}/10</strong></div>
-                       <div class="spec-row"><span>𓎚 Двигатель</span> <strong>${car.engine || '—'}</strong></div>
-                       <div class="spec-row"><span>⚙︎ Привод</span> <strong>${car.drive || '—'}</strong></div>`;
-      if (currentMode === 'blacklist') {
-        specsHTML += `<div class="spec-row"><span>💨 NOS</span> <strong>${car.nos}</strong></div>`;
-      }
-      modalSpecs.innerHTML = specsHTML;     
-      if(currentMode === 'showroom' && car.price) {
-        modalPrice.innerHTML = `<div class="price-big">💰 Цена: ${car.price}</div>`;
-      } else if (currentMode === 'blacklist' && car.price) {
-        modalPrice.innerHTML = `<div class="price-big">🏆 Стоимость: ${car.price}</div>`;
-      } else {
-        modalPrice.innerHTML = (currentMode === 'blacklist') ? `<div class="price-big">🏆 Трофейная машина</div>` : '';
-      }   
-      detailsList.classList.remove('show');
-      detailsList.innerHTML = '';
-      modalOverlay.classList.add('active');
-    }
-    function closeModal() { modalOverlay.classList.remove('active'); currentOpenedCar = null; }    
-    function toggleDetails() {
-      if (!currentOpenedCar) return;
-      if (detailsList.classList.contains('show')) { detailsList.classList.remove('show'); return; }
-      const car = currentOpenedCar;
-      if (car.details && car.details.length) {
-        let html = '';
-        car.details.forEach((line, idx) => { html += `<div>⚡ ${line}</div>`; });
-        detailsList.innerHTML = html;
-      } else { detailsList.innerHTML = '<div>📄 Нет данных по обвесу</div>'; }
-      detailsList.classList.add('show');
-    }
-    btnBlacklist.addEventListener('click', () => { currentMode='blacklist'; currentCars=[...blacklistCars]; btnBlacklist.classList.add('active'); btnShowroom.classList.remove('active'); renderCars(); closeModal(); });
-    btnShowroom.addEventListener('click', () => { currentMode='showroom'; currentCars=[...showroomCars]; btnShowroom.classList.add('active'); btnBlacklist.classList.remove('active'); renderCars(); closeModal(); });
-    closeModalBtn.addEventListener('click', closeModal);
-    modalOverlay.addEventListener('click', (e) => { if(e.target===modalOverlay) closeModal(); });
-    detailsToggleBtn.addEventListener('click', toggleDetails);    
-    renderCars();
-  })();
+    (function() {
+        const blacklistCars = [
+            { id:1, name:"Razor → BMW M3 GTR", img:"https://avatars.mds.yandex.net/i?id=7fe4ed16aa6e1ccbefd3f6781a7bbc04bdda846e-5229540-images-thumbs&n=13", speed:390, handling:9.8, acceleration:9.9, nos:"Мощный", engine:"V8 4.0 (P60B40)", drive:"Задний привод", details:["1. Карбоновый капот Motorsport","2. Гоночный обвес GTR (расширители)","3. Выхлоп Akrapovic Evolution","4. Ковши Recaro Pole Position","5. Каркас безопасности 6-точечный"] },
+            { id:2, name:"Bull → Mercedes SLR", img:"https://avatars.mds.yandex.net/i?id=6a78ac3681f2276ab908aea71515f23a13ab09c5-5231719-images-thumbs&n=13", speed:378, handling:9.2, acceleration:9.7, nos:"Стандарт", engine:"V8 Kompressor 5.4", drive:"Задний привод", details:["1. Карбоновое антикрыло SLR","2. Расширители арок 722","3. Компрессорный V8 (650 л.с.)","4. Керамические тормоза","5. Облегченный кузов из карбона"] },
+            { id:3, name:"Ronnie → Aston DB9", img:"https://avatars.mds.yandex.net/i?id=12067020462c5c40c49136adc20763bb_l-5219691-images-thumbs&n=13", speed:365, handling:9.4, acceleration:9.5, nos:"Улучш.", engine:"V12 6.0", drive:"Задний привод", details:["1. Карбоновый диффузор","2. Спорт-выхлоп Capristo","3. V12 форсированный (510 л.с.)","4. Пневмоподвеска","5. Карбоновая крыша"] },
+            { id:4, name:"JV → Dodge Viper SRT-10", img:"https://avatars.mds.yandex.net/i?id=6370ad581a69030946d599d7af2ec36d_l-7546005-images-thumbs&n=13", speed:370, handling:8.9, acceleration:9.8, nos:"Мощный", engine:"V10 8.4L", drive:"Задний привод", details:["1. Карбоновый капот SRT","2. V10 8.4L (620 л.с.)","3. Гоночные шины Toyo R888","4. Обвес ACR Extreme","5. Титановый выхлоп"] },
+            { id:5, name:"Webster → Corvette C6", img:"https://avatars.mds.yandex.net/i?id=8aebbef2e96ca3dd6839b9150e58eb1a90efdde2-9097932-images-thumbs&n=13", speed:360, handling:9.1, acceleration:9.4, nos:"Стандарт", engine:"LS7 7.0L", drive:"Задний привод", details:["1. Z06 обвес","2. Карбоновые крылья", "3. LS7 7.0L (505 л.с.)","4. Койловеры KW","5. Спорт-катализатор"] },
+            { id:6, name:"Ming → Lamborghini Gallardo", img:"https://avatars.mds.yandex.net/i?id=acc59b82e3a72fb0e38d4b891dc6295be6a59057-12640276-images-thumbs&n=13", speed:372, handling:9.3, acceleration:9.6, nos:"Мощный", engine:"V10 5.0", drive:"Полный привод", details:["1. Карбоновый сплиттер","2. V10 5.0 (530 л.с.)","3. Полный привод","4. Гоночный выхлоп Capristo","5. Карбоновые двери"] },
+            { id:7, name:"Kamikaze → Mercedes CLK500", img:"https://avatars.mds.yandex.net/i?id=0d8e8e56520c2a05620dda80aa1590bf33b302a6-5427097-images-thumbs&n=13", speed:358, handling:9.0, acceleration:9.2, nos:"Стандарт", engine:"V8 5.0", drive:"Задний привод", details:["1. AMG обвес","2. V8 компрессор (430 л.с.)","3. Спорт-подвеска H&R","4. Карбоновые зеркала","5. Выхлопная система Eisenmann"] },
+            { id:8, name:"Jewels → Ford Mustang GT", img:"https://avatars.mds.yandex.net/i?id=aa51a9c5ba81fc9fe800bcb2eca266c4c2476fac-10109607-images-thumbs&n=13", speed:340, handling:8.8, acceleration:9.3, nos:"Мощный", engine:"V8 4.6", drive:"Задний привод", details:["1. Shelby обвес","2. V8 4.6 (480 л.с. нагнетатель)","3. Нагнетатель Whipple","4. Занижение Eibach","5. Карбоновый капот"] },
+            { id:9, name:"Earl → Mitsubishi Evo VIII", img:"https://avatars.mds.yandex.net/i?id=fb414f91823f76e1cd9f15cebfab76bdf127f9af-12811218-images-thumbs&n=13", speed:345, handling:9.6, acceleration:9.1, nos:"Улучш.", engine:"4G63 2.0 Turbo", drive:"Полный привод", details:["1. Раллийный обвес","2. 4G63 турбо (400 л.с.)","3. Полный привод AYC","4. Карбоновое антикрыло","5. Кованые диски Enkei"] },
+            { id:10, name:"Baron → Porsche Cayman S", img:"https://avatars.mds.yandex.net/i?id=e634154168d77656a372fda073a238b3dfc1c31e-8487535-images-thumbs&n=13", speed:342, handling:9.4, acceleration:9.0, nos:"Мощный", engine:"3.4 Boxer", drive:"Задний привод", details:["1. Карбоновый пакет","2. 3.4л (360 л.с.)","3. Выхлопная система Akra","4. Керамические тормоза","5. Спортивная подвеска"] },
+            { id:11, name:"Big Lou → Mitsubishi Eclipse", img:"https://avatars.mds.yandex.net/i?id=88219d877de9543c057f6492ff4105b61519233f-8550886-images-thumbs&n=13", speed:325, handling:8.7, acceleration:9.0, nos:"Стандарт", engine:"4G63 Turbo 2.0", drive:"Передний привод", details:["1. Обвес Bomex","2. 4G63 (320 л.с.)","3. Передний привод LSD","4. Карбоновые крылья","5. Спорт-катализатор"] },
+            { id:12, name:"Izzy → Mazda RX-8", img:"https://avatars.mds.yandex.net/i?id=e7d4021bc1601fdc8df9f8f23554288ffff28fe6-5505749-images-thumbs&n=13", speed:330, handling:9.5, acceleration:8.9, nos:"Улучш.", engine:"RENESIS 1.3 Turbo", drive:"Задний привод", details:["1. Ротор 13B (350 л.с.)","2. Турбо GReddy","3. Обвес RE Amemiya","4. Карбоновый капот","5. Спорт-выхлоп HKS"] },
+            { id:13, name:"Vic → Toyota Supra", img:"https://avatars.mds.yandex.net/i?id=1f76be940eb821806f69ee2a51e5b2e406721222-9182174-images-thumbs&n=13", speed:338, handling:9.2, acceleration:9.4, nos:"Мощный", engine:"2JZ-GTE 3.0", drive:"Задний привод", details:["1. Широкий обвес Veilside","2. 2JZ 800+ л.с.","3. Турбо HKS T62R","4. Карбоновые двери","5. Гоночная подвеска KW"] },
+            { id:14, name:"Taz → Lexus IS300", img:"https://avatars.mds.yandex.net/i?id=2209629ab9438efdeb8d318d6799a6edaccb0c5d-4145587-images-thumbs&n=13", speed:315, handling:8.9, acceleration:8.7, nos:"Стандарт", engine:"2JZ-GE Turbo", drive:"Задний привод", details:["1. Обвес Altezza","2. 2JZ-GE (400 л.с.)","3. Задний привод с диффом","4. Карбоновый капот","5. Койловеры BC"] },
+            { id:15, name:"Sonny → VW Golf GTI", img:"https://avatars.mds.yandex.net/i?id=90aae46b0e8872f987d255eaf6695aa9d1b257c5-12508610-images-thumbs&n=13", speed:280, handling:8.5, acceleration:7.8, nos:"Стандарт", engine:"1.8T 20v", drive:"Передний привод", details:["1. Турбированный 1.8T (280 л.с.)","2. Передний привод с вязкостным диффом","3. Обвес Street Spec","4. Винил '極速'","5. Диски BBS CH 18"] }
+        ];
+        const showroomCars = [
+            { id:101, name:"Lexus IS 300", img:"https://avatars.mds.yandex.net/i?id=896e8c559e40f80dc2aeece042d9c5f9_l-7058976-images-thumbs&n=13", speed:218, handling:6.8, acceleration:5.9, price:"22 000 $", engine:"2JZ-GE 3.0", drive:"Задний привод", details:["1. Заводской аэродинамический обвес","2. Литые диски 17''","3. Спортивная подвеска Eibach","4. Выхлопная система HKS","5. Карбоновый сплиттер"] },
+            { id:102, name:"Fiat Punto", img:"https://avatars.mds.yandex.net/i?id=bf942c695638322ab1c1486607cca3b68533fac2-5302491-images-thumbs&n=13", speed:185, handling:7.2, acceleration:4.8, price:"16 000 $", engine:"1.4 16V NA", drive:"Передний привод", details:["1. Аэродинамический обвес Abarth","2. Выпускная система Ragazzon","3. Спортивный фильтр BMC","4. Колесные диски 16''","5. Занижение пружинами Eibach"] },
+            { id:103, name:"Chevrolet Cobalt SS", img:"https://avatars.mds.yandex.net/i?id=ad4040147dee6210301ea01072664eebef6009c0-4355070-images-thumbs&n=13", speed:228, handling:7.0, acceleration:6.5, price:"24 000 $", engine:"2.0 Supercharged LSJ", drive:"Передний привод", details:["1. Обвес SS (передний бампер, пороги)","2. Задний диффузор","3. Кованые диски 17''","4. Занижение KW","5. Выпуск 2.5''"] },
+            { id:104, name:"Volkswagen Golf GTI", img:"https://avatars.mds.yandex.net/i?id=a67504ff084e93afc12a082c740d45fc9ba9b0765ad30a5a-4290971-images-thumbs&n=13", speed:220, handling:7.5, acceleration:6.2, price:"26 000 $", engine:"2.0 TFSI", drive:"Передний привод", details:["1. Обвес GTI Clubsport","2. Спортивная подвеска","3. Интеркулер усиленный","4. Выхлоп Milltek","5. Диски Detroit 18''"] },
+            { id:105, name:"Audi TT 3.2 quattro", img:"https://avatars.mds.yandex.net/i?id=e299e271a98cb2706c88007503f6d8a4da8a9771-3410853-images-thumbs&n=13", speed:250, handling:8.1, acceleration:6.9, price:"38 000 $", engine:"VR6 3.2", drive:"quattro", details:["1. Spoiler задний","2. Боковые юбки","3. Ксенон + LED","4. 18'' литые диски","5. Аудиосистема Bose"] },
+            { id:106, name:"Audi A3 3.2 quattro", img:"https://avatars.mds.yandex.net/i?id=f9a5ed908c5ceddd12f703e8a75be1c634d5aca2-4600215-images-thumbs&n=13", speed:238, handling:7.8, acceleration:6.4, price:"32 000 $", engine:"VR6 3.2", drive:"quattro", details:["1. Спорт-пакет S-Line","2. Карбоновые накладки зеркал","3. Выхлоп Remus","4. Колеса 18''","5. Занижение Eibach"] },
+            { id:107, name:"Mitsubishi Eclipse", img:"https://avatars.mds.yandex.net/i?id=f2d8ebf088470694a97bcc6780c1e8a786aec58a-4432861-images-thumbs&n=13", speed:242, handling:7.6, acceleration:6.7, price:"30 000 $", engine:"V6 3.8 MIVEC", drive:"Передний привод", details:["1. Обвес GT","2. Высокопроизводительный тормозной комплект","3. Спортивный катализатор","4. Литые 18''","5. Занижение 35mm"] },
+            { id:108, name:"Audi A4 3.2 FSI quattro", img:"https://avatars.mds.yandex.net/i?id=fcdb6504061519fa8ccd2b66ab6b6f1c-4019165-images-thumbs&n=13", speed:244, handling:7.5, acceleration:6.6, price:"34 000 $", engine:"3.2 FSI V6", drive:"quattro", details:["1. S-Line обвес","2. Ксенон","3. Диски 18'' RS4","4. Спортивный руль","5. Короткоходная КПП"] },
+            { id:109, name:"Toyota Supra", img:"https://avatars.mds.yandex.net/i?id=bbbd2af1cc1b3482fc3b73887d4dee12fe17578b-5237892-images-thumbs&n=13", speed:255, handling:7.9, acceleration:7.2, price:"38 000 $", engine:"2JZ-GTE", drive:"Задний привод", details:["1. Обвес TRD","2. Выпуск HKS Hi-Power","3. Колеса 18''","4. Блокировка дифференциала","5. Интеркулер GReddy"] },
+            { id:110, name:"Renault Clio V6", img:"https://avatars.mds.yandex.net/i?id=01374a90945abc56c7d72b0c24adf6a7afa39b16-4411541-images-thumbs&n=13", speed:248, handling:8.0, acceleration:6.9, price:"35 000 $", engine:"V6 3.0", drive:"Задний привод", details:["1. Усиленные тормоза","2. Кованые диски OZ","3. Спортивная подвеска","4. Кожух двигателя","5. Выхлопная система KTR"] },
+            { id:111, name:"Mazda RX-8", img:"https://avatars.mds.yandex.net/i?id=e5112c17a22708a57f0a9df36eff7cac5988007d-5231985-images-thumbs&n=13", speed:236, handling:8.2, acceleration:6.0, price:"28 000 $", engine:"13B-MSP Renesis", drive:"Задний привод", details:["1. Аэродинамический обвес Mazdaspeed","2. Короткоходная подвеска","3. Спортивный выхлоп","4. Усиленная сцепление","5. Диски 18''"] },
+            { id:112, name:"Cadillac CTS", img:"https://avatars.mds.yandex.net/i?id=38c677def6ae0928b2451ab381950c623c055482-4143030-images-thumbs&n=13", speed:248, handling:7.0, acceleration:6.8, price:"33 000 $", engine:"3.6 V6", drive:"Задний привод", details:["1. Спорт-пакет CTS-V обвес","2. Койловеры","3. Тормоза Brembo","4. Диски 18''","5. Карбоновый спойлер"] },
+            { id:113, name:"Ford Mustang GT", img:"https://avatars.mds.yandex.net/i?id=b96c4c4d102fb10ee07b0a0e98798a0eb98313c9-4556414-images-thumbs&n=13", speed:260, handling:7.2, acceleration:7.5, price:"36 000 $", engine:"4.6 V8", drive:"Задний привод", details:["1. Обвес GT California Special","2. Спортивные пружины","3. Выхлоп Borla","4. Кованые 18''","5. Карбоновый капот"] },
+            { id:114, name:"Mitsubishi Lancer Evolution VIII", img:"https://avatars.mds.yandex.net/i?id=eaefd8eb26a1fa2a7c23e9ce6eab41e51ac00db6-4034522-images-thumbs&n=13", speed:265, handling:9.0, acceleration:8.2, price:"40 000 $", engine:"4G63 Turbo", drive:"Полный привод", details:["1. Обвес Evolution MR","2. Раллийные пружины","3. Турбо-кит HKS","4. Карбоновое антикрыло","5. Блокировка AYC"] },
+            { id:115, name:"Mercedes-Benz SL 500", img:"https://avatars.mds.yandex.net/i?id=53593489bc038c1c3f59204e9685e40499843eb7-5865432-images-thumbs&n=13", speed:270, handling:7.8, acceleration:7.4, price:"95 000 $", engine:"V8 5.0", drive:"Задний привод", details:["1. AMG обвес","2. Пневмоподвеска lowered","3. Диски 18'' AMG","4. Выпускная система","5. Карбоновые зеркала"] },
+            { id:116, name:"Pontiac GTO", img:"https://avatars.mds.yandex.net/i?id=b4f9985a21ece74a8c6c210b921ffe2da09d9774-5713119-images-thumbs&n=13", speed:268, handling:7.1, acceleration:7.8, price:"40 000 $", engine:"V8 LS2", drive:"Задний привод", details:["1. Обвес HSV","2. Койловеры Pedders","3. Выпуск Magnaflow","4. Диски 18''","5. Задний спойлер"] },
+            { id:117, name:"Vauxhall Monaro VXR", img:"https://avatars.mds.yandex.net/i?id=ce7190c1454a0493fbc4d16acf79cf298c857c8a-3963629-images-thumbs&n=13", speed:270, handling:7.0, acceleration:7.9, price:"41 000 $", engine:"LS2 6.0", drive:"Задний привод", details:["1. VXR обвес","2. Спортвыхлоп","3. Занижение 30mm","4. Тормоза AP Racing","5. Диски VXR"] },
+            { id:118, name:"Porsche Cayman S", img:"https://avatars.mds.yandex.net/i?id=35f93ecbb8a8d0e3ae5dd46524f1f92b21b72f8d-7149282-images-thumbs&n=13", speed:275, handling:8.7, acceleration:7.6, price:"58 000 $", engine:"3.4 Boxer", drive:"Задний привод", details:["1. Аэрокит TechArt","2. Спорт-выхлоп","3. Керамические тормоза","4. Карбоновые накладки","5. Кованые диски"] },
+            { id:119, name:"Subaru Impreza WRX", img:"https://avatars.mds.yandex.net/i?id=c250582955fb944543a1d6e4a3a4a70a41a20372-4437502-images-thumbs&n=13", speed:252, handling:8.4, acceleration:6.8, price:"34 000 $", engine:"EJ20 Turbo", drive:"Полный привод", details:["1. Обвес STI","2. Прошивка ECU","3. Интеркулер","4. Турбо-выхлоп HKS","5. Регулируемая подвеска"] },
+            { id:120, name:"Mazda RX-7", img:"https://avatars.mds.yandex.net/i?id=779723563bf8f9145444f34075d2d2f47d718cdd-5664541-images-thumbs&n=13", speed:258, handling:8.5, acceleration:7.3, price:"42 000 $", engine:"13B-REW", drive:"Задний привод", details:["1. Обвес RE Amemiya","2. Турбо-кит","3. Кованые диски","4. Карбоновый капот","5. Байпас"] },
+            { id:121, name:"Mercedes CLK 500", img:"https://avatars.mds.yandex.net/i?id=2e4cd686762d07a0cc5e28761d173144456028f2-17810957-images-thumbs&n=13", speed:249, handling:7.4, acceleration:8.0, price:"52 000 $", engine:"5.0 V8", drive:"Задний привод", details:["1. AMG обвес","2. 18'' AMG","3. Спорт-подвеска","4. Кожа Nappa","5. Карбоновый спойлер"] },
+            { id:122, name:"Lotus Elise", img:"https://avatars.mds.yandex.net/i?id=30af0e06e51af6ced58941f913482d810ceede23-5251159-images-thumbs&n=13", speed:245, handling:9.2, acceleration:6.8, price:"45 000 $", engine:"1.8 Rover K", drive:"Задний привод", details:["1. Аэродинамический обвес","2. Кованые диски","3. Спорт-выхлоп Larini","4. Усиленные тормоза","5. Карбоновая отделка"] },
+            { id:123, name:"Aston Martin DB9", img:"https://avatars.mds.yandex.net/i?id=fff14f8c855f8d8f740807e2b908f5d1b8fc01f7-5666966-images-thumbs&n=13", speed:305, handling:8.6, acceleration:8.5, price:"155 000 $", engine:"V12 6.0", drive:"Задний привод", details:["1. Карбоновый обвес","2. Выхлоп Capristo","3. Керамические тормоза","4. 19'' кованые","5. Спортивная подвеска"] },
+            { id:124, name:"Porsche 911 Carrera S", img:"https://avatars.mds.yandex.net/i?id=2541d14613e229dd7f436b912449b9ed47028f80-3923189-images-thumbs&n=13", speed:298, handling:8.9, acceleration:8.6, price:"120 000 $", engine:"3.8 Boxer", drive:"Задний привод", details:["1. Аэрокит Aerokit","2. Керамика PCCB","3. Спорт-выхлоп","4. Занижение 20mm","5. Карбоновые зеркала"] },
+            { id:125, name:"Dodge Viper SRT-10", img:"https://avatars.mds.yandex.net/i?id=b3941dd53e1380b1e9a6ef4af1d6ce97fc5a72f2-5026382-images-thumbs&n=13", speed:320, handling:8.0, acceleration:9.0, price:"110 000 $", engine:"V10 8.3", drive:"Задний привод", details:["1. Обвес SRT-10 Competition","2. Койловеры Mopar","3. Титановый выхлоп","4. Карбоновые крылья","5. Кованые диски"] },
+            { id:126, name:"Lamborghini Gallardo", img:"https://avatars.mds.yandex.net/i?id=bea74c3bf37457a85069f5161cf80f85c0ddc47b-17396670-images-thumbs&n=13", speed:310, handling:8.5, acceleration:8.8, price:"120 000 $", engine:"V10 5.0", drive:"Полный привод", details:["1. Карбоновый обвес Novitec","2. Гоночный выхлоп","3. Керамические тормоза","4. Занижение","5. Колеса 19''"] },
+            { id:127, name:"Porsche 911 Turbo S", img:"https://avatars.mds.yandex.net/i?id=4b63e5433617f717af9ead505067b8c69d3567f9-5875598-images-thumbs&n=13", speed:325, handling:8.8, acceleration:9.1, price:"150 000 $", engine:"3.6 Twin-Turbo", drive:"Полный привод", details:["1. Карбон-пакет","2. Аэродинамический обвес","3. Выхлоп Akrapovic","4. PCCB керамика","5. Программирование ECU"] },
+            { id:128, name:"Chevrolet Corvette C6™", img:"https://avatars.mds.yandex.net/i?id=9c0378ebdfeafdbf2773a6c8cd15710dbb3eca83-5042173-images-thumbs&n=13", speed:290, handling:7.8, acceleration:8.2, price:"65 000 $", engine:"LS2 6.0", drive:"Задний привод", details:["1. Обвес Z06","2. Выхлоп Corsa","3. Кованые 18''","4. Спортивные ремни","5. Подвеска Bilstein"] },
+            { id:129, name:"Lamborghini Murciélago", img:"https://avatars.mds.yandex.net/i?id=6d71b09beb88396efa0c88bcb58b21d37990dc6a-4769521-images-thumbs&n=13", speed:340, handling:8.5, acceleration:9.3, price:"320 000 $", engine:"V12 6.2", drive:"Полный привод", details:["1. Карбоновый обвес","2. Гоночная подвеска","3. Керамические тормоза","4. Титановый выхлоп","5. Колеса 20''"] },
+            { id:130, name:"Ford GT", img:"https://avatars.mds.yandex.net/i?id=cd013914c2e5c8d0bb05bdbb17077e3beb218b76-5107704-images-thumbs&n=13", speed:340, handling:8.2, acceleration:9.4, price:"200 000 $", engine:"V8 5.4 SC", drive:"Задний привод", details:["1. Карбоновый кузов","2. Кованые диски","3. Усиленные тормоза","4. Выхлоп Borla","5. Спортивная подвеска"] },
+            { id:131, name:"Mercedes SLR McLaren", img:"https://avatars.mds.yandex.net/i?id=16c40935120b81d45d21672cfec0629328786085-10962086-images-thumbs&n=13", speed:330, handling:8.3, acceleration:9.2, price:"350 000 $", engine:"V8 Kompressor", drive:"Задний привод", details:["1. Карбоновый обвес 722","2. Выхлопная система","3. Керамика","4. 19'' кованые","5. Аэродинамический пакет"] },
+            { id:132, name:"Porsche Carrera GT", img:"https://avatars.mds.yandex.net/i?id=8b87b893724a224ebe59daf3abc996ec8dd9d284-5247923-images-thumbs&n=13", speed:345, handling:8.9, acceleration:9.5, price:"450 000 $", engine:"V10 5.7", drive:"Задний привод", details:["1. Карбоновый монокок","2. Керамические тормоза","3. Спорт-выхлоп","4. Кованые диски","5. Гоночная подвеска"] }
+        ];
+
+        let currentMode = 'blacklist';
+        let currentCars = [...blacklistCars];
+        let currentOpenedCar = null;
+
+        const btnBlacklist = document.getElementById('btnBlacklist');
+        const btnShowroom = document.getElementById('btnShowroom');
+        const carsContainer = document.getElementById('carsContainer');
+        const modalOverlay = document.getElementById('modalOverlay');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalSpecs = document.getElementById('modalSpecs');
+        const modalPrice = document.getElementById('modalPrice');
+        const detailsToggleBtn = document.getElementById('detailsToggleBtn');
+        const detailsList = document.getElementById('detailsList');
+        const modalCarImage = document.getElementById('modalCarImage');
+
+        // Глобальное меню
+        const globalMenuBtn = document.getElementById('globalMenuBtn');
+        const globalDropdown = document.getElementById('globalDropdown');
+        const closeMenuBtn = document.getElementById('closeMenuBtn');
+
+        globalMenuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            globalDropdown.classList.toggle('show');
+        });
+
+        closeMenuBtn.addEventListener('click', () => {
+            globalDropdown.classList.remove('show');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!globalDropdown.contains(e.target) && e.target !== globalMenuBtn) {
+                globalDropdown.classList.remove('show');
+            }
+        });
+
+        function renderCars() {
+            carsContainer.innerHTML = '';
+            currentCars.forEach(car => {
+                const card = document.createElement('div');
+                card.className = 'car-card';
+                card.innerHTML = `<div class="car-img"><img src="${car.img}" alt="${car.name}" loading="lazy" onerror="this.src='https://i.imgur.com/0iCZoCe.png'"></div><div class="car-name">${car.name}</div>`;
+                card.addEventListener('click', () => openModal(car));
+                carsContainer.appendChild(card);
+            });
+        }
+
+        function openModal(car) {
+            currentOpenedCar = car;
+            modalTitle.textContent = car.name;
+            modalCarImage.innerHTML = `<img src="${car.img}" alt="${car.name}" onerror="this.src='https://i.imgur.com/0iCZoCe.png'">`;
+            let specsHTML = `<div class="spec-row"><span>⏲ Макс. скорость</span> <strong>${car.speed} км/ч</strong></div>
+                             <div class="spec-row"><span>⚠︎ Управление</span> <strong>${car.handling}/10</strong></div>
+                             <div class="spec-row"><span>⏱ Разгон (0-100)</span> <strong>${car.acceleration}/10</strong></div>
+                             <div class="spec-row"><span>𓎚 Двигатель</span> <strong>${car.engine || '—'}</strong></div>
+                             <div class="spec-row"><span>⚙︎ Привод</span> <strong>${car.drive || '—'}</strong></div>`;
+            if (currentMode === 'blacklist') {
+                specsHTML += `<div class="spec-row"><span>💨 NOS</span> <strong>${car.nos}</strong></div>`;
+            }
+            modalSpecs.innerHTML = specsHTML;
+            if(currentMode === 'showroom' && car.price) {
+                modalPrice.innerHTML = `<div class="price-big">💰 Цена: ${car.price}</div>`;
+            } else if (currentMode === 'blacklist' && car.price) {
+                modalPrice.innerHTML = `<div class="price-big">🏆 Стоимость: ${car.price}</div>`;
+            } else {
+                modalPrice.innerHTML = (currentMode === 'blacklist') ? `<div class="price-big">🏆 Трофейная машина</div>` : '';
+            }
+            detailsList.classList.remove('show');
+            detailsList.innerHTML = '';
+            modalOverlay.classList.add('active');
+        }
+
+        function closeModal() { modalOverlay.classList.remove('active'); currentOpenedCar = null; }
+
+        function toggleDetails() {
+            if (!currentOpenedCar) return;
+            if (detailsList.classList.contains('show')) { detailsList.classList.remove('show'); return; }
+            const car = currentOpenedCar;
+            if (car.details && car.details.length) {
+                let html = '';
+                car.details.forEach((line) => { html += `<div>⚡ ${line}</div>`; });
+                detailsList.innerHTML = html;
+            } else { detailsList.innerHTML = '<div>📄 Нет данных по обвесу</div>'; }
+            detailsList.classList.add('show');
+        }
+
+        btnBlacklist.addEventListener('click', () => { currentMode='blacklist'; currentCars=[...blacklistCars]; btnBlacklist.classList.add('active'); btnShowroom.classList.remove('active'); renderCars(); closeModal(); });
+        btnShowroom.addEventListener('click', () => { currentMode='showroom'; currentCars=[...showroomCars]; btnShowroom.classList.add('active'); btnBlacklist.classList.remove('active'); renderCars(); closeModal(); });
+        closeModalBtn.addEventListener('click', closeModal);
+        modalOverlay.addEventListener('click', (e) => { if(e.target===modalOverlay) closeModal(); });
+        detailsToggleBtn.addEventListener('click', toggleDetails);
+
+        renderCars();
+    })();
 </script>
 </body>
 </html>
